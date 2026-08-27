@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Profit Time</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+
+    h1 {
+      color: #FFD700;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .form-container {
+      max-width: 400px;
+      margin: 40px auto;
+      background-color: #111;
+      padding: 30px;
+      border-radius: 10px;
+      border: 2px solid #FFD700;
+      box-shadow: 0 0 20px #FFD700;
+      justify-content: center;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #FFD700;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 0px 10px 10px ;
+      margin-bottom: 20px;
+      border: 2px solid #FFD700;
+      border-radius: 5px;
+      background-color: #000;
+      color: #fff;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #fff;
+    }
+    .email-wrapper {
+padding-right: -20;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper input {
+      padding-right: 0px; /* space for the icon */
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #FFD700;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+    }
+
+    /* Disable hover/focus/active highlight completely */
+    .toggle-password:hover,
+    .toggle-password:focus,
+    .toggle-password:active {
+      background: none;
+      color: #FFD700;
+      outline: none;
+      box-shadow: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background-color: #FFD700;
+      color: #000;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    .links {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .links a {
+      color: #FFD700;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+      display: block;
+      margin: 8px 0;
+    }
+
+    .links a:hover {
+      color: #fff;
+    }
+
+    .message {
+      text-align: center;
+      color: #FFD700;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+
+    /* ================================
+       MEDIA QUERIES
+       ================================ */
+    /* Phones */
+    @media (max-width: 600px) {
+      .form-container {
+        margin: 20px;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      button {
+        font-size: 16px;
+        padding: 12px;
+      }
+    }
+
+    /* Tablets */
+    @media (max-width: 900px) {
+      .form-container {
+        max-width: 500px;
+      }
+      h1 {
+        font-size: 26px;
+      }
+    }
+
+    /* Desktops */
+    @media (min-width: 901px) {
+      .form-container {
+        max-width: 400px;
+      }
+      h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Login to Profit Time</h1>
+
+  <div class="form-container" id="loginForm">
+    <form id="logForm" onsubmit="handleLogin(event)">
+      <!-- Email -->
+      <label for="email">Email Address</label>
+     <div class="email-wrapper">
+      <input type="email" id="email" name="email" required>
+       </div>
+      <!-- Password with toggle -->
+      <label for="password">Password</label>
+      <div class="password-wrapper">
+        <input type="password" id="password" name="password" required>
+        <span class="toggle-password" onclick="togglePassword()">👁</span>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit">Login</button>
+    </form>
+
+    <div class="links">
+      <a href="register.html">Don’t have an account? Register</a>
+      <a href="#" onclick="forgotPassword()">Forgot Password?</a>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="message" id="successMessage" style="display:none;">
+    ✅ Login successful! Redirecting to your portal...
+  </div>
+  <div class="message" id="resetMessage" style="display:none;">
+    📧 Password reset link has been sent to your email.
+  </div>
+
+  <!-- Firebase SDKs -->
+  <!-- Add Firebase SDK scripts here -->
+  <!-- Example:
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  -->
+
+  <script>
+   
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyD69aLH33wHia-KuLNcnzZPIgNTBGV444M",
+    authDomain: "profit-time-3d01d.firebaseapp.com",
+    projectId: "profit-time-3d01d",
+    storageBucket: "profit-time-3d01d.firebasestorage.app",
+    messagingSenderId: "653397102382",
+    appId: "1:653397102382:web:0bf9f1c85f176c56a174bf",
+    measurementId: "G-GCEBC52KFQ"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+
+    // Toggle password visibility
+    function togglePassword() {
+      const passwordField = document.getElementById("password");
+      passwordField.type = passwordField.type === "password" ? "text" : "password";
+    }
+
+    // Handle Login
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          document.getElementById("loginForm").style.display = "none";
+          document.getElementById("successMessage").style.display = "block";
+          setTimeout(() => {
+            window.location.href = "portal.html";
+          }, 2000);
+        })
+        .catch((error) => {
+          alert("Login failed: " + error.message);
+        });
+    }
+
+    // Handle Forgotten Password
+    function forgotPassword() {
+      const email = document.getElementById("email").value;
+      if (!email) {
+        alert("Please enter your email address first.");
+        return;
+      }
+
+      firebase.auth().sendPasswordResetEmail(email)
+        .then(() => {
+          document.getElementById("loginForm").style.display = "none";
+          document.getElementById("resetMessage").style.display = "block";
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+        });
+    }
+  </script>
+</body>
+</html>

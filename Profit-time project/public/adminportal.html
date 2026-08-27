@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal - Profit Time</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+
+    header {
+      background-color: #111;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #FFD700;
+    }
+
+    header h1 {
+      color: #FFD700;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background-color: #111;
+      padding: 30px;
+      border-radius: 10px;
+      border: 2px solid #FFD700;
+      box-shadow: 0 0 20px #FFD700;
+    }
+
+    h2 {
+      color: #FFD700;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #FFD700;
+      padding-bottom: 5px;
+    }
+
+    .user-list {
+      margin-bottom: 30px;
+    }
+
+    .user-item {
+      padding: 12px;
+      border: 1px solid #FFD700;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .user-item:hover {
+      background-color: #222;
+    }
+
+    .user-details {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #222;
+      border: 2px solid #FFD700;
+      border-radius: 8px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #FFD700;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 2px solid #FFD700;
+      border-radius: 5px;
+      background-color: #000;
+      color: #fff;
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: #FFD700;
+      color: #000;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 15px;
+        padding: 20px;
+      }
+      header h1 {
+        font-size: 22px;
+      }
+      h2 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Admin Portal</h1>
+</header>
+
+<div class="container">
+  <!-- Dashboard Summary -->
+  <section class="summary">
+    <h2>Dashboard Summary</h2>
+    <div>Total Users: <span id="totalUsers"></span></div>
+    <div>Pending Deposits: <span id="pendingDeposits"></span></div>
+    <div>Pending Withdrawals: <span id="pendingWithdrawals"></span></div>
+  </section>
+
+  <!-- User Management -->
+  <section class="users">
+    <h2>Registered Users</h2>
+    <input type="text" id="searchUser" placeholder="Search user by name or email">
+    <div class="user-list" id="userList"></div>
+  </section>
+
+  <!-- Payment Requests -->
+  <section class="requests">
+    <h2>Payment Requests</h2>
+    <div id="depositRequests">Deposits will load here...</div>
+    <div id="withdrawRequests">Withdrawals will load here...</div>
+  </section>
+
+  <!-- User Details -->
+  <section class="user-details" id="userDetails" style="display:none;">
+    <h2>User Details</h2>
+    <div>Name: <span id="detailName"></span></div>
+    <div>Email: <span id="detailEmail"></span></div>
+    <div>Location: <span id="detailLocation"></span></div>
+    <div>Package: <span id="detailPackage"></span></div>
+
+    <label for="balance">Wallet Balance</label>
+    <input type="number" id="balance" placeholder="Enter new balance">
+    <button onclick="updateBalance()">Update Balance</button>
+  </section>
+</div>
+ <div class="container">
+    <h2>Registered Users</h2>
+    <div class="user-list" id="userList">
+      <!-- User items will load here -->
+    </div>
+
+    <div class="user-details" id="userDetails" style="display:none;">
+      <h2>User Details</h2>
+      <div>Name: <span id="detailName"></span></div>
+      <div>Email: <span id="detailEmail"></span></div>
+      <div>Location: <span id="detailLocation"></span></div>
+      <div>Package: <span id="detailPackage"></span></div>
+
+      <label for="balance">Wallet Balance</label>
+      <input type="number" id="balance" placeholder="Enter new balance">
+
+      <button onclick="updateBalance()">Update Balance</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <!-- Example:
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  -->
+
+  <script>
+    
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyD69aLH33wHia-KuLNcnzZPIgNTBGV444M",
+    authDomain: "profit-time-3d01d.firebaseapp.com",
+    projectId: "profit-time-3d01d",
+    storageBucket: "profit-time-3d01d.firebasestorage.app",
+    messagingSenderId: "653397102382",
+    appId: "1:653397102382:web:0bf9f1c85f176c56a174bf",
+    measurementId: "G-GCEBC52KFQ"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+
+    let selectedUserId = null;
+
+    // Load all users
+    db.collection("registrations").get().then(snapshot => {
+      const userList = document.getElementById("userList");
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement("div");
+        div.className = "user-item";
+        div.textContent = data.name + " (" + data.email + ")";
+        div.onclick = () => loadUser(doc.id, data);
+        userList.appendChild(div);
+      });
+    });
+
+    // Load user details
+    function loadUser(uid, data) {
+      selectedUserId = uid;
+      document.getElementById("detailName").textContent = data.name;
+      document.getElementById("detailEmail").textContent = data.email;
+      document.getElementById("detailLocation").textContent = data.location;
+      document.getElementById("detailPackage").textContent = data.packageChoice;
+      document.getElementById("balance").value = data.wallet ? data.wallet : 0;
+      document.getElementById("userDetails").style.display = "block";
+    }
+
+    // Update balance
+    function updateBalance() {
+      const newBalance = document.getElementById("balance").value;
+      if (!selectedUserId) {
+        alert("No user selected.");
+        return;
+      }
+      db.collection("registrations").doc(selectedUserId).update({
+        wallet: newBalance
+      }).then(() => {
+        alert("Balance updated successfully!");
+      }).catch(error => {
+        alert("Error updating balance: " + error.message);
+      });
+    }
+    // Load users
+db.collection("registrations").get().then(snapshot => {
+  document.getElementById("totalUsers").textContent = snapshot.size;
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const div = document.createElement("div");
+    div.className = "user-item";
+    div.textContent = `${data.name} (${data.email})`;
+    div.onclick = () => loadUser(doc.id, data);
+    document.getElementById("userList").appendChild(div);
+  });
+});
+
+// Load deposit requests
+db.collection("deposits").where("status","==","Pending").get().then(snapshot => {
+  document.getElementById("pendingDeposits").textContent = snapshot.size;
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const div = document.createElement("div");
+    div.innerHTML = `Deposit: $${data.amount} | Wallet: ${data.wallet}
+      <button onclick="approveDeposit('${doc.id}', '${data.uid}', ${data.amount})">Approve</button>
+      <button onclick="rejectDeposit('${doc.id}')">Reject</button>`;
+    document.getElementById("depositRequests").appendChild(div);
+  });
+});
+
+// Approve deposit
+function approveDeposit(requestId, uid, amount) {
+  // Update deposit status
+  db.collection("deposits").doc(requestId).update({status:"Approved"});
+  // Update user balance
+  db.collection("registrations").doc(uid).update({
+    wallet: firebase.firestore.FieldValue.increment(amount)
+  });
+  alert("Deposit approved and balance updated!");
+}
+
+// Similar logic for withdrawals
+
+  </script>
+</body>
+</html>

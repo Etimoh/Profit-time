@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Profit Time</title>
+  <style>
+    body { font-family: 'Poppins', sans-serif; background:#000; color:#fff; }
+    .form-container {
+      max-width:400px; margin:50px auto; background:#111;
+      padding:30px; border-radius:10px; border:2px solid #FFD700;
+      box-shadow:0 0 15px #FFD700;
+    }
+    h1 { text-align:center; color:#FFD700; }
+    label { display:block; margin:10px 0 5px; color:#FFD700; }
+    input { width:100%; padding:12px; margin-bottom:15px;
+      border:2px solid #FFD700; border-radius:5px; background:#000; color:#fff; }
+    .password-box { position:relative; }
+    .toggle-btn {
+     position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #FFD700;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+    }
+    button { width:100%; padding:12px; background:#FFD700; color:#000;
+      font-weight:bold; border:none; border-radius:5px; cursor:pointer; }
+    button:hover { background:#fff; color:#000; }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Admin Login</h1>
+    <form onsubmit="loginAdmin(event)">
+      <label for="email">Email</label>
+      <input type="email" id="email" required>
+
+      <label for="password">Password</label>
+      <div class="password-box">
+        <input type="password" id="password" required>
+        <button type="button" class="toggle-btn" onclick="togglePassword('password')">👁</button>
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <script>
+  
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyD69aLH33wHia-KuLNcnzZPIgNTBGV444M",
+    authDomain: "profit-time-3d01d.firebaseapp.com",
+    projectId: "profit-time-3d01d",
+    storageBucket: "profit-time-3d01d.firebasestorage.app",
+    messagingSenderId: "653397102382",
+    appId: "1:653397102382:web:0bf9f1c85f176c56a174bf",
+    measurementId: "G-GCEBC52KFQ"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+
+    function togglePassword(fieldId) {
+      const field = document.getElementById(fieldId);
+      field.type = field.type === "password" ? "text" : "password";
+    }
+
+    function loginAdmin(event) {
+      event.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          const uid = userCredential.user.uid;
+          return db.collection("admins").doc(uid).get();
+        })
+        .then(doc => {
+          if (doc.exists) {
+            window.location.href = "admin-portal.html";
+          } else {
+            alert("Access denied. Not an admin.");
+            firebase.auth().signOut();
+          }
+        })
+        .catch(error => alert("Login failed: " + error.message));
+    }
+  </script>
+</body>
+</html>

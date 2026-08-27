@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deposit</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <style>
+    /* General page styling */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+
+    /* Heading */
+    h1 {
+      color: #FFD700;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    /* Deposit form container */
+    .form-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #111;
+      padding: 30px;
+      border-radius: 10px;
+      border: 2px solid #FFD700;
+      box-shadow: 0 0 20px #FFD700;
+    }
+
+    /* Labels */
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #FFD700;
+    }
+
+    /* Inputs */
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 2px solid #FFD700;
+      border-radius: 5px;
+      background-color: #000;
+      color: #fff;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #fff;
+    }
+
+    /* Wallet box */
+    .wallet-box {
+      background-color: #222;
+      border: 2px solid #FFD700;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .wallet-box h3 {
+      margin: 0 0 10px;
+      color: #FFD700;
+    }
+
+    .wallet-address {
+      font-size: 14px;
+      word-break: break-all;
+      background-color: #000;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #FFD700;
+      margin-bottom: 10px;
+    }
+
+    /* Buttons */
+    .copy-btn,
+    button {
+      width: 100%;
+      padding: 12px 20px;
+      background-color: #FFD700;
+      color: #000;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-sizing: border-box;
+    }
+
+    .copy-btn:hover,
+    button:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* Response message */
+    .message {
+      display: none;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 30px;
+      text-align: center;
+      color: #FFD700;
+      font-size: 18px;
+      background-color: #111;
+      border: 2px solid #FFD700;
+      border-radius: 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .form-container,
+      .message {
+        margin: 20px;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      button,
+      .copy-btn {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Deposit Funds</h1>
+
+  <div class="form-container" id="depositForm">
+    <form id="depForm">
+      <label for="amount">Deposit Amount</label>
+
+      <input
+        type="number"
+        id="amount"
+        name="amount"
+        min="0.01"
+        step="0.01"
+        placeholder="Enter amount"
+        required
+      >
+
+      <div class="wallet-box">
+        <h3>Transfer to Wallet</h3>
+
+        <div class="wallet-address" id="walletAddress">
+          0x1234567890ABCDEF1234567890ABCDEF12345678
+        </div>
+
+        <button type="button" class="copy-btn" id="copyButton">
+          Copy Wallet Address
+        </button>
+      </div>
+
+      <button type="submit" id="submitButton">
+        Payment Complete
+      </button>
+    </form>
+  </div>
+
+  <div class="message" id="responseMessage">
+    ✅ Payment submitted successfully.<br>
+    ⏳ Awaiting admin approval...
+  </div>
+
+  <script>
+  
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyD69aLH33wHia-KuLNcnzZPIgNTBGV444M",
+    authDomain: "profit-time-3d01d.firebaseapp.com",
+    projectId: "profit-time-3d01d",
+    storageBucket: "profit-time-3d01d.firebasestorage.app",
+    messagingSenderId: "653397102382",
+    appId: "1:653397102382:web:0bf9f1c85f176c56a174bf",
+    measurementId: "G-GCEBC52KFQ"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+
+    const db = firebase.firestore();
+
+    const form = document.getElementById("depForm");
+    const amountInput = document.getElementById("amount");
+    const walletAddress = document.getElementById("walletAddress");
+    const copyButton = document.getElementById("copyButton");
+    const submitButton = document.getElementById("submitButton");
+
+    copyButton.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(walletAddress.textContent.trim());
+
+        copyButton.textContent = "Wallet Address Copied!";
+
+        setTimeout(() => {
+          copyButton.textContent = "Copy Wallet Address";
+        }, 1500);
+      } catch (error) {
+        alert("Could not copy wallet address.");
+      }
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const user = firebase.auth().currentUser;
+      const amount = Number(amountInput.value);
+
+      if (!user) {
+        alert("Please log in first.");
+        return;
+      }
+
+      if (!Number.isFinite(amount) || amount <= 0) {
+        alert("Please enter a valid deposit amount.");
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Submitting...";
+
+      try {
+        await db.collection("deposits").add({
+          uid: user.uid,
+          amount: amount,
+          wallet: walletAddress.textContent.trim(),
+          status: "Pending",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        document.getElementById("depositForm").style.display = "none";
+        document.getElementById("responseMessage").style.display = "block";
+      } catch (error) {
+        alert("Error: " + error.message);
+        submitButton.disabled = false;
+        submitButton.textContent = "Payment Complete";
+      }
+    });
+  </script>
+</body>
+</html>

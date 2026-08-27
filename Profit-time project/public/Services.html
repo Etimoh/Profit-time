@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services - Profit Time</title>
+  <style>
+    /* ================================
+       GLOBAL STYLES
+       ================================ */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+
+    h1, h2, h3 {
+      color: #FFD700;
+    }
+
+    a {
+      text-decoration: none;
+      color: #FFD700;
+    }
+
+    /* ================================
+       HEADER / NAVBAR
+       ================================ */
+    header {
+      background-color: #111;
+      padding: 20px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      color: #FFD700;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 30px;
+    }
+
+    nav ul li a {
+      color: #fff;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: #FFD700;
+    }
+
+    /* Hamburger Icon */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .hamburger span {
+      height: 3px;
+      width: 25px;
+      background: #FFD700;
+      margin: 4px 0;
+      transition: 0.4s;
+    }
+
+    /* Mobile Dropdown Menu */
+    nav ul.mobile {
+      display: none;
+      flex-direction: column;
+      background-color: #111;
+      position: absolute;
+      top: 70px;
+      right: 0;
+      width: 200px;
+      padding: 20px;
+    }
+
+    nav ul.mobile li {
+      margin: 10px 0;
+    }
+
+    /* ================================
+       HERO SECTION
+       ================================ */
+    .hero {
+      height: 50vh;
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                  url('../images/services\ hero.jpg') center/cover no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 50px;
+      text-transform: uppercase;
+    }
+
+    /* ================================
+       PACKAGES SECTION
+       ================================ */
+    .packages {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      padding: 80px 50px;
+      background-color: #111;
+    }
+
+    .package {
+      background-color: #000;
+      border: 2px solid #FFD700;
+      border-radius: 10px;
+      padding: 30px;
+      width: 300px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .package:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 0 20px #FFD700;
+    }
+
+    .package h3 {
+      margin-bottom: 15px;
+    }
+
+    .package-img {
+      width: 100%;
+      height: 180px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #FFD700;
+    }
+
+    .package-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .roi {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 20px 0;
+      color: #FFD700;
+    }
+
+    .btn {
+      background-color: #FFD700;
+      color: #000;
+      padding: 12px 25px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      border-radius: 5px;
+    }
+
+    .btn:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    /* ================================
+       FOOTER
+       ================================ */
+    footer {
+      background-color: #000;
+      color: #FFD700;
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* ================================
+       MEDIA QUERIES
+       ================================ */
+    @media (max-width: 768px) {
+      nav ul.desktop {
+        display: none; /* Hide desktop nav */
+      }
+
+      .hamburger {
+        display: flex; /* Show hamburger */
+      }
+
+      .packages {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">PROFIT TIME</div>
+    <nav>
+      <ul class="desktop">
+        <li><a href="index.html">Home</a></li>
+       
+        <li><a href="login.html">Login</a></li>
+      </ul>
+      <div class="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <ul class="mobile" id="mobileMenu">
+        <li><a href="index.html">Home</a></li>
+       
+        <li><a href="login.html">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Our Investment Packages</h1>
+  </section>
+
+  <!-- PACKAGES -->
+  <section class="packages">
+    <!-- Package 1 -->
+    <div class="package">
+      <div class="package-img">
+        <img src="../images/Starter package.jpg" alt="Starter Package">
+      </div>
+      <h3>Starter Package</h3>
+      <p>Perfect for beginners looking to test the waters with AI-driven trading.</p>
+      <div class="roi">13% ROI Weekly</div>
+      <button class="btn">Invest Now</button>
+    </div>
+
+    <!-- Package 2 -->
+    <div class="package">
+      <div class="package-img">
+        <img src="../images/growth package.jpg" alt="Growth Package">
+      </div>
+      <h3>Growth Package</h3>
+      <p>Designed for traders ready to scale their investments with confidence.</p>
+      <div class="roi">16% ROI Weekly</div>
+      <button class="btn">Invest Now</button>
+    </div>
+
+    <!-- Package 3 -->
+    <div class="package">
+      <div class="package-img">
+        <img src="../images/premium package.jpg" alt="Premium Package">
+      </div>
+      <h3>Premium Package</h3>
+      <p>For serious investors seeking higher returns and advanced strategies.</p>
+      <div class="roi">20% ROI Weekly</div>
+      <button class="btn">Invest Now</button>
+    </div>
+
+    <!-- Package 4 -->
+    <div class="package">
+      <div class="package-img">
+        <img src="../images/Elite package.jpg" alt="Elite Package">
+      </div>
+      <h3>Elite Package</h3>
+      <p>The ultimate investment opportunity with maximum profitability.</p>
+      <div class="roi">24% ROI Weekly</div>
+      <button class="btn">Invest Now</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Profit Time | All Rights Reserved</p>
+  </footer>
+
+  <!-- INTERNAL JS -->
+  <script>
+
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyD69aLH33wHia-KuLNcnzZPIgNTBGV444M",
+    authDomain: "profit-time-3d01d.firebaseapp.com",
+    projectId: "profit-time-3d01d",
+    storageBucket: "profit-time-3d01d.firebasestorage.app",
+    messagingSenderId: "653397102382",
+    appId: "1:653397102382:web:0bf9f1c85f176c56a174bf",
+    measurementId: "G-GCEBC52KFQ"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+    /* Mobile Nav Toggle */
+    function toggleMenu() {
+      const menu = document.getElementById("mobileMenu");
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+    }
+  </script>
+</body>
+</html>

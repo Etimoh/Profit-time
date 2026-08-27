@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Portal - Profit Time</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+
+    header {
+      background-color: #111;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #FFD700;
+    }
+
+    header h1 {
+      color: #FFD700;
+      margin: 0;
+    }
+
+    .dashboard {
+      max-width: 900px;
+      margin: 40px auto;
+      background-color: #111;
+      padding: 30px;
+      border-radius: 10px;
+      border: 2px solid #FFD700;
+      box-shadow: 0 0 20px #FFD700;
+    }
+
+    .dashboard h2 {
+      color: #FFD700;
+      margin-bottom: 20px;
+    }
+
+    .info {
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .info span {
+      color: #FFD700;
+      font-weight: bold;
+    }
+
+    .wallet {
+      margin: 20px 0;
+      padding: 20px;
+      background-color: #222;
+      border: 2px solid #FFD700;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .wallet h3 {
+      margin: 0;
+      color: #FFD700;
+    }
+
+    .wallet-amount {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.actions .btn {
+  display: inline-block;
+  padding: 12px 25px;
+  background-color: #FFD700;
+  color: #000;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.actions .btn:hover {
+  background-color: #fff;
+  color: #000;
+  box-shadow: 0 0 10px #FFD700;
+}
+
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .actions button {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px;
+      background-color: #FFD700;
+      color: #000;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .actions button:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    /* Responsive Media Queries */
+    @media (max-width: 600px) {
+      .dashboard {
+        margin: 20px;
+        padding: 20px;
+      }
+      header h1 {
+        font-size: 22px;
+      }
+      .dashboard h2 {
+        font-size: 20px;
+      }
+      .wallet-amount {
+        font-size: 20px;
+      }
+      .actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Welcome to Profit Time</h1>
+  </header>
+
+  <div class="dashboard">
+    <h2>User Investment Details</h2>
+    <div class="info">Name: <span id="userName"></span></div>
+    <div class="info">Email: <span id="userEmail"></span></div>
+    <div class="info">Location: <span id="userLocation"></span></div>
+    <div class="info">Amount Range: <span id="userAmount"></span></div>
+    <div class="info">Package: <span id="userPackage"></span></div>
+
+    <div class="wallet">
+      <h3>Wallet Balance</h3>
+      <div class="wallet-amount" id="walletBalance">$0.00</div>
+    </div>
+
+    <div class="actions">
+  <a href="deposit.html" class="btn">Deposit</a>
+  <a href="withdrawal.html" class="btn">Withdraw</a>
+  <a href="contact-admin.html" class="btn">Contact Admin</a>
+  <a href="index.html" class="btn">Logout</a>
+</div>
+
+  </div>
+  <!-- Firebase SDKs -->
+  <!-- Example:
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  -->
+
+  <script>
+    
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyD69aLH33wHia-KuLNcnzZPIgNTBGV444M",
+    authDomain: "profit-time-3d01d.firebaseapp.com",
+    projectId: "profit-time-3d01d",
+    storageBucket: "profit-time-3d01d.firebasestorage.app",
+    messagingSenderId: "653397102382",
+    appId: "1:653397102382:web:0bf9f1c85f176c56a174bf",
+    measurementId: "G-GCEBC52KFQ"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+    // Load user data when logged in
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        db.collection("registrations").doc(user.uid).get()
+          .then((doc) => {
+            if (doc.exists) {
+              const data = doc.data();
+              document.getElementById("userName").textContent = data.name;
+              document.getElementById("userEmail").textContent = data.email;
+              document.getElementById("userLocation").textContent = data.location;
+              document.getElementById("userAmount").textContent = data.amount;
+              document.getElementById("userPackage").textContent = data.packageChoice;
+
+              // Wallet balance (default or stored)
+              document.getElementById("walletBalance").textContent = data.wallet ? `$${data.wallet}` : "$0.00";
+            } else {
+              alert("No investment details found.");
+            }
+          })
+          .catch((error) => {
+            alert("Error loading data: " + error.message);
+          });
+      } else {
+        // Redirect to login if not authenticated
+        window.location.href = "login.html";
+      }
+    });
+
+    // Deposit function (example)
+    function deposit() {
+      alert("Deposit request submitted. Please wait for admin approval.");
+    }
+
+    // Withdraw function (example)
+    function withdraw() {
+      alert("Withdrawal request submitted. Please wait for admin approval.");
+    }
+
+    // Contact Admin function
+    function contactAdmin() {
+      window.location.href = "mailto:admin@profit-time.com?subject=Support Request";
+    }
+
+    // Logout function
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "login.html";
+      }).catch((error) => {
+        alert("Logout failed: " + error.message);
+      });
+    }
+  </script>
+</body>
+</html>
