@@ -167,59 +167,53 @@
 </div>
 
   </div>
-  <script>
-  
-    // Load user data when logged in
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        db.collection("registrations").doc(user.uid).get()
-          .then((doc) => {
-            if (doc.exists) {
-              const data = doc.data();
-              document.getElementById("userName").textContent = data.name;
-              document.getElementById("userEmail").textContent = data.email;
-              document.getElementById("userLocation").textContent = data.location;
-              document.getElementById("userAmount").textContent = data.amount;
-              document.getElementById("userPackage").textContent = data.packageChoice;
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-              // Wallet balance (default or stored)
-              document.getElementById("walletBalance").textContent = data.wallet ? `$${data.wallet}` : "$0.00";
-            } else {
-              alert("No investment details found.");
-            }
-          })
-          .catch((error) => {
-            alert("Error loading data: " + error.message);
-          });
-      } else {
-        // Redirect to login if not authenticated
+    const supabase = createClient(
+      'https://zjqknqnvlmlkkgzglvjk.supabase.co',
+      'sb_publishable_YXPm0Uo8HmW-Fg2N5LFUdA_X2POjW9u'
+    );
+
+    async function loadUserData() {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
         window.location.href = "login.html";
+        return;
       }
-    });
 
-    // Deposit function (example)
-    function deposit() {
-      alert("Deposit request submitted. Please wait for admin approval.");
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error || !profile) {
+        alert("Error loading your details: " + (error ? error.message : "not found"));
+        return;
+      }
+
+      document.getElementById("userName").textContent = profile.name || "—";
+      document.getElementById("userEmail").textContent = profile.email || user.email;
+      document.getElementById("userLocation").textContent = profile.location || "—";
+      document.getElementById("userAmount").textContent = profile.amount_range || "—";
+      document.getElementById("userPackage").textContent = profile.package_choice || "—";
+      document.getElementById("walletBalance").textContent =
+        `$${Number(profile.wallet || 0).toFixed(2)}`;
     }
 
-    // Withdraw function (example)
-    function withdraw() {
-      alert("Withdrawal request submitted. Please wait for admin approval.");
-    }
+    loadUserData();
 
-    // Contact Admin function
-    function contactAdmin() {
-      window.location.href = "mailto:admin@profit-time.com?subject=Support Request";
-    }
-
-    // Logout function
-    function logout() {
-      firebase.auth().signOut().then(() => {
-        window.location.href = "login.html";
-      }).catch((error) => {
+    document.getElementById("logoutBtn").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const { error } = await supabase.auth.signOut();
+      if (error) {
         alert("Logout failed: " + error.message);
-      });
-    }
+        return;
+      }
+      window.location.href = "login.html";
+    });
   </script>
 </body>
 </html>
