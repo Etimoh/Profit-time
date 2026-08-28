@@ -118,34 +118,56 @@
 
  
 
-  <script>
+ <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
+    const supabase = createClient(
+      'https://zjqknqnvlmlkkgzglvjk.supabase.co',
+      'sb_publishable_YXPm0Uo8HmW-Fg2N5LFUdA_X2POjW9u'
+    );
 
-    // Handle Withdrawal
-    function handleWithdraw() {
-      const user = firebase.auth().currentUser;
-      const amount = document.getElementById("amount").value;
-      const wallet = document.getElementById("wallet").value;
+    const withForm = document.getElementById("withForm");
+    const withdrawBtn = document.getElementById("withdrawBtn");
+
+    withForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
         alert("Please log in first.");
+        window.location.href = "login.html";
         return;
       }
 
-      db.collection("withdrawals").add({
-        uid: user.uid,
-        amount,
-        wallet,
-        status: "Pending",
-        createdAt: new Date()
-      }).then(() => {
-        // Hide form and show waiting message
-        document.getElementById("withdrawForm").style.display = "none";
-        document.getElementById("responseMessage").style.display = "block";
-      }).catch((error) => {
-        alert("Error: " + error.message);
+      const amount = Number(document.getElementById("amount").value);
+      const wallet = document.getElementById("wallet").value.trim();
+
+      if (!Number.isFinite(amount) || amount <= 0) {
+        alert("Please enter a valid withdrawal amount.");
+        return;
+      }
+
+      withdrawBtn.disabled = true;
+      withdrawBtn.textContent = "Submitting...";
+
+      const { error } = await supabase.from('withdrawals').insert({
+        user_id: user.id,
+        amount: amount,
+        wallet_address: wallet,
+        status: "Pending"
       });
-    }
+
+      if (error) {
+        alert("Error: " + error.message);
+        withdrawBtn.disabled = false;
+        withdrawBtn.textContent = "Withdraw";
+        return;
+      }
+
+      document.getElementById("withdrawForm").style.display = "none";
+      document.getElementById("responseMessage").style.display = "block";
+    });
   </script>
 </body>
 </html>
