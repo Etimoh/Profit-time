@@ -28,42 +28,30 @@
       box-shadow: 0 0 20px #FFD700;
     }
 
-   /* General input styling */
-input, select {
+   input, select {
   width: 100%;
-  max-width: 100%;   /* prevents stretching */
-  
-  padding: 10px 0px 10px 10px;     /* slightly smaller padding */
-  margin-bottom: 15px; /* consistent spacing */
-  border: 1.5px solid #FFD700; /* thinner border */
+  max-width: 100%;
+  padding: 10px 0px 10px 10px;
+  margin-bottom: 15px;
+  border: 1.5px solid #FFD700;
   border-radius: 5px;
   background-color: #000;
   color: #fff;
-  font-size: 14px;   /* smaller font size */
-}
-
-/* Labels */
-label {
-  display: block;
-  margin-bottom: 6px; /* tighter spacing */
-  font-weight: 500;   /* lighter weight */
-  color: #FFD700;
   font-size: 14px;
 }
 
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #FFD700;
+  font-size: 14px;
+}
 
     input:focus, select:focus {
       outline: none;
       border-color: #fff;
     }
-    /* Adjust only the name and email fields */
-#name, #email {
-  padding: -10px;          /* reduce padding so they’re not oversized */
-  margin-bottom: 15px;    /* consistent spacing */
-  border: 1.5px solid #FFD700; /* thinner border */
-  font-size: 14px;        /* smaller text size */
-  max-width: 100%;        /* prevent stretching */
-}
 
     .password-wrapper {
       position: relative;
@@ -114,6 +102,11 @@ label {
       color: #000;
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .success-message {
       text-align: center;
       color: #FFD700;
@@ -139,7 +132,6 @@ label {
       color: #fff;
     }
 
-    /* Responsive Media Queries */
     @media (max-width: 600px) {
       .form-container {
         margin: 20px;
@@ -153,24 +145,6 @@ label {
         padding: 12px;
       }
     }
-
-    @media (max-width: 900px) {
-      .form-container {
-        max-width: 500px;
-      }
-      h1 {
-        font-size: 26px;
-      }
-    }
-
-    @media (min-width: 901px) {
-      .form-container {
-        max-width: 600px;
-      }
-      h1 {
-        font-size: 32px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -178,101 +152,35 @@ label {
   <h1>Register Your Investment</h1>
 
   <div class="form-container" id="registrationForm">
-    <form id="regForm" onsubmit="handleRegistration(event)">
-      <!-- Name -->
+    <form id="regForm">
       <label for="name">Full Name</label>
       <input type="text" id="name" name="name" required>
 
-      <!-- Email -->
       <label for="email">Email Address</label>
       <input type="email" id="email" name="email" required>
 
-      <!-- Password -->
       <label for="password">Password</label>
       <div class="password-wrapper">
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" required minlength="6">
         <span class="toggle-password" onclick="togglePassword('password')">👁</span>
       </div>
 
-      <!-- Confirm Password -->
       <label for="confirmPassword">Confirm Password</label>
       <div class="password-wrapper">
         <input type="password" id="confirmPassword" name="confirmPassword" required>
         <span class="toggle-password" onclick="togglePassword('confirmPassword')">👁</span>
       </div>
 
-      <!-- Location -->
       <label for="location">Select Location</label>
       <select id="location" name="location" required>
         <option value="">-- Choose Location --</option>
-     <option value="Algeria">Algeria</option>
-<option value="Argentina">Argentina</option>
-<option value="Australia">Australia</option>
-<option value="Bangladesh">Bangladesh</option>
-<option value="Belgium">Belgium</option>
-<option value="Benin">Benin</option>
-<option value="Botswana">Botswana</option>
-<option value="Brazil">Brazil</option>
-<option value="Burkina Faso">Burkina Faso</option>
-<option value="Cameroon">Cameroon</option>
-<option value="Canada">Canada</option>
-<option value="Chile">Chile</option>
-<option value="China">China</option>
-<option value="DR Congo">DR Congo</option>
-<option value="Egypt">Egypt</option>
-<option value="Ethiopia">Ethiopia</option>
-<option value="France">France</option>
-<option value="Ghana">Ghana</option>
-<option value="Germany">Germany</option>
-<option value="India">India</option>
-<option value="Indonesia">Indonesia</option>
-<option value="Ireland">Ireland</option>
-<option value="Italy">Italy</option>
-<option value="Ivory Coast">Ivory Coast</option>
-<option value="Japan">Japan</option>
-<option value="Kenya">Kenya</option>
-<option value="Liberia">Liberia</option>
-<option value="Madagascar">Madagascar</option>
-<option value="Malawi">Malawi</option>
-<option value="Malaysia">Malaysia</option>
-<option value="Mauritius">Mauritius</option>
-<option value="Mexico">Mexico</option>
-<option value="Morocco">Morocco</option>
-<option value="Mozambique">Mozambique</option>
-<option value="Namibia">Namibia</option>
-<option value="Netherlands">Netherlands</option>
-<option value="New Zealand">New Zealand</option>
-<option value="Nigeria">Nigeria</option>
-<option value="Norway">Norway</option>
-<option value="Pakistan">Pakistan</option>
-<option value="Philippines">Philippines</option>
-<option value="Poland">Poland</option>
-<option value="Rwanda">Rwanda</option>
-<option value="Russia">Russia</option>
-<option value="Saudi Arabia">Saudi Arabia</option>
-<option value="Senegal">Senegal</option>
-<option value="Seychelles">Seychelles</option>
-<option value="Sierra Leone">Sierra Leone</option>
-<option value="Singapore">Singapore</option>
-<option value="South Africa">South Africa</option>
-<option value="South Korea">South Korea</option>
-<option value="Spain">Spain</option>
-<option value="Sweden">Sweden</option>
-<option value="Switzerland">Switzerland</option>
-<option value="Tanzania">Tanzania</option>
-<option value="Thailand">Thailand</option>
-<option value="Togo">Togo</option>
-<option value="Turkey">Turkey</option>
-<option value="Uganda">Uganda</option>
-<option value="UK">UK</option>
-<option value="Ukraine">Ukraine</option>
-<option value="USA">USA</option>
-<option value="Vietnam">Vietnam</option>
-<option value="Zambia">Zambia</option>
-<option value="Zimbabwe">Zimbabwe</option>
+        <option value="Nigeria">Nigeria</option>
+        <option value="USA">USA</option>
+        <option value="UK">UK</option>
+        <option value="Canada">Canada</option>
+        <option value="Other">Other</option>
       </select>
 
-      <!-- Investment Amount -->
       <label for="amount">Investment Amount Range</label>
       <select id="amount" name="amount" required>
         <option value="">-- Choose Range --</option>
@@ -282,7 +190,6 @@ label {
         <option value="5000+">$5,000+</option>
       </select>
 
-      <!-- Package -->
       <label for="package">Select Package</label>
       <select id="package" name="package" required>
         <option value="">-- Choose Package --</option>
@@ -292,18 +199,17 @@ label {
         <option value="Elite">Elite (24% ROI Weekly)</option>
       </select>
 
-      <!-- Submit -->
-      <button type="submit">Register</button>
+      <button type="submit" id="regSubmitBtn">Register</button>
     </form>
   </div>
 
-  <!-- Success Message -->
   <div class="success-message" id="successMessage" style="display:none;">
     🎉 Thank you for registering! Your account has been created.
     <div class="login-link">
       <a href="login.html">Proceed to Login</a>
     </div>
   </div>
+
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
