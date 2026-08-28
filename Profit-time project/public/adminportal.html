@@ -175,97 +175,307 @@
     </div>
   </div>
 
-  <!-- Firebase SDKs -->
-  <!-- Example:
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-  -->
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-  <script>
-    
+  const supabase = createClient(
+    'https://zjqknqnvlmlkkgzglvjk.supabase.co',
+    'sb_publishable_YXPm0Uo8HmW-Fg2N5LFUdA_X2POjW9u'
+  );
 
+  let allUsers = [];
+  let selectedUserId = null;
 
-    let selectedUserId = null;
+  // --- Guard: must be logged in AND is_admin ---
+  async function requireAdmin() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      window.location.href = "admin-login.html";
+      return null;
+    }
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
 
-    // Load all users
-    db.collection("registrations").get().then(snapshot => {
-      const userList = document.getElementById("userList");
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const div = document.createElement("div");
-        div.className = "user-item";
-        div.textContent = data.name + " (" + data.email + ")";
-        div.onclick = () => loadUser(doc.id, data);
-        userList.appendChild(div);
-      });
+    if (!profile || !profile.is_admin) {
+      alert("Access denied. Not an admin.");
+      window.location.href = "admin-login.html";
+      return null;
+    }
+    return user;
+  }
+
+  function renderUserList(users) {
+    const userList = document.getElementById("userList");
+    userList.innerHTML = "";
+    if (users.length === 0) {
+      userList.textContent = "No users found.";
+      return;
+    }
+    users.forEach(u => {
+      const div = document.createElement("div");
+      div.className = "user-item";
+      div.textContent = `${u.name || "(no name)"} (${u.email || "no email"})`;
+      div.onclick = () => loadUserDetails(u);
+      userList.appendChild(div);
     });
+  }
 
-    // Load user details
-    function loadUser(uid, data) {
-      selectedUserId = uid;
-      document.getElementById("detailName").textContent = data.name;
-      document.getElementById("detailEmail").textContent = data.email;
-      document.getElementById("detailLocation").textContent = data.location;
-      document.getElementById("detailPackage").textContent = data.packageChoice;
-      document.getElementById("balance").value = data.wallet ? data.wallet : 0;
-      document.getElementById("userDetails").style.display = "block";
+  function loadUserDetails(u) {
+    selectedUserId = u.id;
+    document.getElementById("detailName").textContent = u.name || "—";
+    document.getElementById("detailEmail").textContent = u.email || "—";
+    document.getElementById("detailLocation").textContent = u.location || "—";
+    document.getElementById("detailPackage").textContent = u.package_choice || "—";
+    document.getElementById("balance").value = u.wallet || 0;
+    document.getElementById("userDetails").style.display = "block";
+  }
+
+  document.getElementById("updateBalanceBtn").addEventListener("click", async () => {
+    const newBalance = Number(document.getElementById("balance").value);
+    if (!selectedUserId) {
+      alert("No user selected.");
+      return;
+    }
+    const { error } = await supabase
+      .from('profiles')
+      .update({ wallet: newBalance })
+      .eq('id', selectedUserId);
+
+    if (error) {
+      alert("Error updating balance: " + error.message);
+    } else {
+      alert("Balance updated successfully!");
+      loadAll();
+    }
+  });
+
+  document.getElementById("searchUser").addEventListener("input", (e) => {
+    const term = e.target.value.toLowerCase();
+    const filtered = allUsers.filter(u =>
+      (u.name || "").toLowerCase().includes(term) ||
+      (u.email || "").toLowerCase().includes(term)
+    );
+    renderUserList(filtered);
+  });
+
+  async function loadUsers() {
+    const { data: users, error } = await supabase.from('profiles').select('*');
+    if (error) {
+      document.getElementById("userList").textContent = "Error loading users: " + error.message;
+      return;
+    }
+    allUsers = users || [];
+    document.getElementById("totalUsers").textContent = allUsers.length;
+    renderUserList(allUsers);
+  }
+
+  async function approveDeposit(depositId, userId, amount) {
+    // Look up current wallet balance
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('wallet')
+      .eq('id', userId)
+      .single();
+
+    if (profileError) {
+      alert("Error looking up user: " + profileError.message);
+      return;
     }
 
-    // Update balance
-    function updateBalance() {
-      const newBalance = document.getElementById("balance").value;
-      if (!selectedUserId) {
-        alert("No user selected.");
-        return;
-      }
-      db.collection("registrations").doc(selectedUserId).update({
-        wallet: newBalance
-      }).then(() => {
-        alert("Balance updated successfully!");
-      }).catch(error => {
-        alert("Error updating balance: " + error.message);
-      });
+    const newBalance = Number(profile.wallet || 0) + Number(amount);
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ wallet: newBalance })
+      .eq('id', userId);
+
+    if (updateError) {
+      alert("Error updating balance: " + updateError.message);
+      return;
     }
-    // Load users
-db.collection("registrations").get().then(snapshot => {
-  document.getElementById("totalUsers").textContent = snapshot.size;
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    const div = document.createElement("div");
-    div.className = "user-item";
-    div.textContent = `${data.name} (${data.email})`;
-    div.onclick = () => loadUser(doc.id, data);
-    document.getElementById("userList").appendChild(div);
+
+    const { error: statusError } = await supabase
+      .from('deposits')
+      .update({ status: "Approved" })
+      .eq('id', depositId);
+
+    if (statusError) {
+      alert("Balance updated, but failed to mark deposit approved: " + statusError.message);
+      return;
+    }
+
+    alert("Deposit approved and balance updated!");
+    loadAll();
+  }
+
+  async function rejectDeposit(depositId) {
+    const { error } = await supabase
+      .from('deposits')
+      .update({ status: "Rejected" })
+      .eq('id', depositId);
+
+    if (error) {
+      alert("Error: " + error.message);
+      return;
+    }
+    loadAll();
+  }
+
+  async function approveWithdrawal(withdrawalId, userId, amount) {
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('wallet')
+      .eq('id', userId)
+      .single();
+
+    if (profileError) {
+      alert("Error looking up user: " + profileError.message);
+      return;
+    }
+
+    const currentBalance = Number(profile.wallet || 0);
+    if (currentBalance < Number(amount)) {
+      alert("User's wallet balance is lower than the withdrawal amount. Approve anyway with caution.");
+    }
+
+    const newBalance = currentBalance - Number(amount);
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ wallet: newBalance })
+      .eq('id', userId);
+
+    if (updateError) {
+      alert("Error updating balance: " + updateError.message);
+      return;
+    }
+
+    const { error: statusError } = await supabase
+      .from('withdrawals')
+      .update({ status: "Approved" })
+      .eq('id', withdrawalId);
+
+    if (statusError) {
+      alert("Balance updated, but failed to mark withdrawal approved: " + statusError.message);
+      return;
+    }
+
+    alert("Withdrawal approved and balance updated!");
+    loadAll();
+  }
+
+  async function rejectWithdrawal(withdrawalId) {
+    const { error } = await supabase
+      .from('withdrawals')
+      .update({ status: "Rejected" })
+      .eq('id', withdrawalId);
+
+    if (error) {
+      alert("Error: " + error.message);
+      return;
+    }
+    loadAll();
+  }
+
+  async function loadDeposits() {
+    const { data: deposits, error } = await supabase
+      .from('deposits')
+      .select('*, profiles(name, email)')
+      .eq('status', 'Pending');
+
+    const container = document.getElementById("depositRequests");
+    container.innerHTML = "";
+
+    if (error) {
+      container.textContent = "Error loading deposits: " + error.message;
+      return;
+    }
+
+    document.getElementById("pendingDeposits").textContent = deposits.length;
+
+    if (deposits.length === 0) {
+      container.textContent = "No pending deposits.";
+      return;
+    }
+
+    deposits.forEach(d => {
+      const div = document.createElement("div");
+      div.className = "request-item";
+      const who = d.profiles ? `${d.profiles.name || ""} (${d.profiles.email || ""})` : d.user_id;
+      div.innerHTML = `
+        <div>User: ${who}</div>
+        <div>Amount: $${Number(d.amount).toFixed(2)}</div>
+      `;
+      const approveBtn = document.createElement("button");
+      approveBtn.textContent = "Approve";
+      approveBtn.onclick = () => approveDeposit(d.id, d.user_id, d.amount);
+
+      const rejectBtn = document.createElement("button");
+      rejectBtn.textContent = "Reject";
+      rejectBtn.className = "reject";
+      rejectBtn.onclick = () => rejectDeposit(d.id);
+
+      div.appendChild(approveBtn);
+      div.appendChild(rejectBtn);
+      container.appendChild(div);
+    });
+  }
+
+  async function loadWithdrawals() {
+    const { data: withdrawals, error } = await supabase
+      .from('withdrawals')
+      .select('*, profiles(name, email)')
+      .eq('status', 'Pending');
+
+    const container = document.getElementById("withdrawRequests");
+    container.innerHTML = "";
+
+    if (error) {
+      container.textContent = "Error loading withdrawals: " + error.message;
+      return;
+    }
+
+    document.getElementById("pendingWithdrawals").textContent = withdrawals.length;
+
+    if (withdrawals.length === 0) {
+      container.textContent = "No pending withdrawals.";
+      return;
+    }
+
+    withdrawals.forEach(w => {
+      const div = document.createElement("div");
+      div.className = "request-item";
+      const who = w.profiles ? `${w.profiles.name || ""} (${w.profiles.email || ""})` : w.user_id;
+      div.innerHTML = `
+        <div>User: ${who}</div>
+        <div>Amount: $${Number(w.amount).toFixed(2)}</div>
+        <div>Wallet: ${w.wallet_address || "—"}</div>
+      `;
+      const approveBtn = document.createElement("button");
+      approveBtn.textContent = "Approve";
+      approveBtn.onclick = () => approveWithdrawal(w.id, w.user_id, w.amount);
+
+      const rejectBtn = document.createElement("button");
+      rejectBtn.textContent = "Reject";
+      rejectBtn.className = "reject";
+      rejectBtn.onclick = () => rejectWithdrawal(w.id);
+
+      div.appendChild(approveBtn);
+      div.appendChild(rejectBtn);
+      container.appendChild(div);
+    });
+  }
+
+  async function loadAll() {
+    await Promise.all([loadUsers(), loadDeposits(), loadWithdrawals()]);
+  }
+
+  requireAdmin().then(user => {
+    if (user) loadAll();
   });
-});
-
-// Load deposit requests
-db.collection("deposits").where("status","==","Pending").get().then(snapshot => {
-  document.getElementById("pendingDeposits").textContent = snapshot.size;
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    const div = document.createElement("div");
-    div.innerHTML = `Deposit: $${data.amount} | Wallet: ${data.wallet}
-      <button onclick="approveDeposit('${doc.id}', '${data.uid}', ${data.amount})">Approve</button>
-      <button onclick="rejectDeposit('${doc.id}')">Reject</button>`;
-    document.getElementById("depositRequests").appendChild(div);
-  });
-});
-
-// Approve deposit
-function approveDeposit(requestId, uid, amount) {
-  // Update deposit status
-  db.collection("deposits").doc(requestId).update({status:"Approved"});
-  // Update user balance
-  db.collection("registrations").doc(uid).update({
-    wallet: firebase.firestore.FieldValue.increment(amount)
-  });
-  alert("Deposit approved and balance updated!");
-}
-
-// Similar logic for withdrawals
-
-  </script>
+</script>
 </body>
 </html>
