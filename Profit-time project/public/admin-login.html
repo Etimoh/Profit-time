@@ -51,35 +51,60 @@
     </form>
   </div>
 
-  <script>
-  
+ 
+    <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
+    const supabase = createClient(
+      'https://zjqknqnvlmlkkgzglvjk.supabase.co',
+      'sb_publishable_YXPm0Uo8HmW-Fg2N5LFUdA_X2POjW9u'
+    );
 
-    function togglePassword(fieldId) {
-      const field = document.getElementById(fieldId);
+    document.getElementById("toggleBtn").addEventListener("click", () => {
+      const field = document.getElementById("password");
       field.type = field.type === "password" ? "text" : "password";
-    }
+    });
 
-    function loginAdmin(event) {
+    const form = document.getElementById("adminLoginForm");
+    const loginBtn = document.getElementById("adminLoginBtn");
+
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const email = document.getElementById("email").value;
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
-      firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          const uid = userCredential.user.uid;
-          return db.collection("admins").doc(uid).get();
-        })
-        .then(doc => {
-          if (doc.exists) {
-            window.location.href = "admin-portal.html";
-          } else {
-            alert("Access denied. Not an admin.");
-            firebase.auth().signOut();
-          }
-        })
-        .catch(error => alert("Login failed: " + error.message));
-    }
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Checking...";
+
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email, password
+      });
+
+      if (signInError) {
+        alert("Login failed: " + signInError.message);
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login";
+        return;
+      }
+
+      const user = signInData.user;
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || !profile || !profile.is_admin) {
+        alert("Access denied. Not an admin.");
+        await supabase.auth.signOut();
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login";
+        return;
+      }
+
+      window.location.href = "adminportal.html";
+    });
   </script>
 </body>
 </html>
