@@ -204,60 +204,64 @@ padding-right: -20;
     📧 Password reset link has been sent to your email.
   </div>
 
-  <!-- Firebase SDKs -->
-  <!-- Add Firebase SDK scripts here -->
-  <!-- Example:
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-  -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-  <script>
-   
+    const supabase = createClient(
+      'https://zjqknqnvlmlkkgzglvjk.supabase.co',
+      'sb_publishable_YXPm0Uo8HmW-Fg2N5LFUdA_X2POjW9u'
+    );
 
-
-
-    // Toggle password visibility
-    function togglePassword() {
+    window.togglePassword = function () {
       const passwordField = document.getElementById("password");
       passwordField.type = passwordField.type === "password" ? "text" : "password";
-    }
+    };
 
-    // Handle Login
-    function handleLogin(event) {
+    const logForm = document.getElementById("logForm");
+    const loginBtn = document.getElementById("loginBtn");
+
+    logForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const email = document.getElementById("email").value;
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
-      firebase.auth().signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          document.getElementById("loginForm").style.display = "none";
-          document.getElementById("successMessage").style.display = "block";
-          setTimeout(() => {
-            window.location.href = "portal.html";
-          }, 2000);
-        })
-        .catch((error) => {
-          alert("Login failed: " + error.message);
-        });
-    }
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Logging in...";
 
-    // Handle Forgotten Password
-    function forgotPassword() {
-      const email = document.getElementById("email").value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        alert("Login failed: " + error.message);
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login";
+        return;
+      }
+
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("successMessage").style.display = "block";
+      setTimeout(() => {
+        window.location.href = "userportal.html";
+      }, 1500);
+    });
+
+    document.getElementById("forgotLink").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
       if (!email) {
         alert("Please enter your email address first.");
         return;
       }
 
-      firebase.auth().sendPasswordResetEmail(email)
-        .then(() => {
-          document.getElementById("loginForm").style.display = "none";
-          document.getElementById("resetMessage").style.display = "block";
-        })
-        .catch((error) => {
-          alert("Error: " + error.message);
-        });
-    }
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+      if (error) {
+        alert("Error: " + error.message);
+        return;
+      }
+
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("resetMessage").style.display = "block";
+    });
   </script>
 </body>
 </html>
