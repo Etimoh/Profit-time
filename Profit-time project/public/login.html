@@ -44,14 +44,12 @@
       border-radius: 5px;
       background-color: #000;
       color: #fff;
+      box-sizing: border-box;
     }
 
     input:focus {
       outline: none;
       border-color: #fff;
-    }
-    .email-wrapper {
-padding-right: -20;
     }
 
     .password-wrapper {
@@ -59,7 +57,7 @@ padding-right: -20;
     }
 
     .password-wrapper input {
-      padding-right: 0px; /* space for the icon */
+      padding-right: 0px;
     }
 
     .toggle-password {
@@ -76,7 +74,6 @@ padding-right: -20;
       outline: none;
     }
 
-    /* Disable hover/focus/active highlight completely */
     .toggle-password:hover,
     .toggle-password:focus,
     .toggle-password:active {
@@ -104,6 +101,11 @@ padding-right: -20;
       color: #000;
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .links {
       text-align: center;
       margin-top: 20px;
@@ -129,10 +131,6 @@ padding-right: -20;
       margin-top: 20px;
     }
 
-    /* ================================
-       MEDIA QUERIES
-       ================================ */
-    /* Phones */
     @media (max-width: 600px) {
       .form-container {
         margin: 20px;
@@ -147,7 +145,6 @@ padding-right: -20;
       }
     }
 
-    /* Tablets */
     @media (max-width: 900px) {
       .form-container {
         max-width: 500px;
@@ -157,7 +154,6 @@ padding-right: -20;
       }
     }
 
-    /* Desktops */
     @media (min-width: 901px) {
       .form-container {
         max-width: 400px;
@@ -173,30 +169,25 @@ padding-right: -20;
   <h1>Login to Profit Time</h1>
 
   <div class="form-container" id="loginForm">
-    <form id="logForm" onsubmit="handleLogin(event)">
-      <!-- Email -->
+    <form id="logForm">
       <label for="email">Email Address</label>
-     <div class="email-wrapper">
       <input type="email" id="email" name="email" required>
-       </div>
-      <!-- Password with toggle -->
+
       <label for="password">Password</label>
       <div class="password-wrapper">
         <input type="password" id="password" name="password" required>
         <span class="toggle-password" onclick="togglePassword()">👁</span>
       </div>
 
-      <!-- Submit -->
-      <button type="submit">Login</button>
+      <button type="submit" id="loginBtn">Login</button>
     </form>
 
     <div class="links">
-      <a href="register.html">Don’t have an account? Register</a>
-      <a href="#" onclick="forgotPassword()">Forgot Password?</a>
+      <a href="Register.html">Don't have an account? Register</a>
+      <a href="#" id="forgotLink">Forgot Password?</a>
     </div>
   </div>
 
-  <!-- Messages -->
   <div class="message" id="successMessage" style="display:none;">
     ✅ Login successful! Redirecting to your portal...
   </div>
