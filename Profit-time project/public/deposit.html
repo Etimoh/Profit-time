@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Deposit</title>
 
-
-
   <style>
-    /* General page styling */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -16,14 +13,12 @@
       color: #fff;
     }
 
-    /* Heading */
     h1 {
       color: #FFD700;
       text-align: center;
       margin-top: 40px;
     }
 
-    /* Deposit form container */
     .form-container {
       max-width: 600px;
       margin: 40px auto;
@@ -34,7 +29,6 @@
       box-shadow: 0 0 20px #FFD700;
     }
 
-    /* Labels */
     label {
       display: block;
       margin-bottom: 8px;
@@ -42,7 +36,6 @@
       color: #FFD700;
     }
 
-    /* Inputs */
     input {
       width: 100%;
       padding: 12px;
@@ -59,7 +52,6 @@
       border-color: #fff;
     }
 
-    /* Wallet box */
     .wallet-box {
       background-color: #222;
       border: 2px solid #FFD700;
@@ -84,7 +76,6 @@
       margin-bottom: 10px;
     }
 
-    /* Buttons */
     .copy-btn,
     button {
       width: 100%;
@@ -111,7 +102,6 @@
       opacity: 0.7;
     }
 
-    /* Response message */
     .message {
       display: none;
       max-width: 600px;
@@ -125,7 +115,6 @@
       border-radius: 10px;
     }
 
-    /* Responsive adjustments */
     @media (max-width: 600px) {
       .form-container,
       .message {
@@ -152,7 +141,6 @@
   <div class="form-container" id="depositForm">
     <form id="depForm">
       <label for="amount">Deposit Amount</label>
-
       <input
         type="number"
         id="amount"
@@ -165,11 +153,9 @@
 
       <div class="wallet-box">
         <h3>Transfer to Wallet</h3>
-
         <div class="wallet-address" id="walletAddress">
           0x1234567890ABCDEF1234567890ABCDEF12345678
         </div>
-
         <button type="button" class="copy-btn" id="copyButton">
           Copy Wallet Address
         </button>
@@ -186,10 +172,13 @@
     ⏳ Awaiting admin approval...
   </div>
 
-  <script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-
-    const db = firebase.firestore();
+    const supabase = createClient(
+      'https://zjqknqnvlmlkkgzglvjk.supabase.co',
+      'sb_publishable_YXPm0Uo8HmW-Fg2N5LFUdA_X2POjW9u'
+    );
 
     const form = document.getElementById("depForm");
     const amountInput = document.getElementById("amount");
@@ -200,9 +189,7 @@
     copyButton.addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(walletAddress.textContent.trim());
-
         copyButton.textContent = "Wallet Address Copied!";
-
         setTimeout(() => {
           copyButton.textContent = "Copy Wallet Address";
         }, 1500);
@@ -214,11 +201,12 @@
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      const user = firebase.auth().currentUser;
+      const { data: { user } } = await supabase.auth.getUser();
       const amount = Number(amountInput.value);
 
       if (!user) {
         alert("Please log in first.");
+        window.location.href = "login.html";
         return;
       }
 
@@ -230,22 +218,22 @@
       submitButton.disabled = true;
       submitButton.textContent = "Submitting...";
 
-      try {
-        await db.collection("deposits").add({
-          uid: user.uid,
-          amount: amount,
-          wallet: walletAddress.textContent.trim(),
-          status: "Pending",
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+      const { error } = await supabase.from('deposits').insert({
+        user_id: user.id,
+        amount: amount,
+        wallet_address: walletAddress.textContent.trim(),
+        status: "Pending"
+      });
 
-        document.getElementById("depositForm").style.display = "none";
-        document.getElementById("responseMessage").style.display = "block";
-      } catch (error) {
+      if (error) {
         alert("Error: " + error.message);
         submitButton.disabled = false;
         submitButton.textContent = "Payment Complete";
+        return;
       }
+
+      document.getElementById("depositForm").style.display = "none";
+      document.getElementById("responseMessage").style.display = "block";
     });
   </script>
 </body>
