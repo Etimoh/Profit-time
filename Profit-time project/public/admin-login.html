@@ -1,111 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login - Profit Time</title>
-  <style>
-    body { font-family: 'Poppins', sans-serif; background:#000; color:#fff; }
-    .form-container {
-      max-width:400px; margin:50px auto; background:#111;
-      padding:30px; border-radius:10px; border:2px solid #FFD700;
-      box-shadow:0 0 15px #FFD700;
-    }
-    h1 { text-align:center; color:#FFD700; }
-    label { display:block; margin:10px 0 5px; color:#FFD700; }
-    input { width:100%; padding:12px; margin-bottom:15px;
-      border:2px solid #FFD700; border-radius:5px; background:#000; color:#fff;
-      box-sizing: border-box; }
-    .password-box { position:relative; }
-    .toggle-btn {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #FFD700;
-      font-size: 14px;
-      cursor: pointer;
-      padding: 0;
-      outline: none;
-    }
-    button { width:100%; padding:12px; background:#FFD700; color:#000;
-      font-weight:bold; border:none; border-radius:5px; cursor:pointer; }
-    button:hover { background:#fff; color:#000; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - Profit Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070c;
+    --bg-soft:#0b0f18;
+    --card:#11151f;
+    --card-hi:#161c29;
+    --border:#232b3d;
+    --gold:#f0b90b;
+    --gold-2:#ffd84d;
+    --gold-soft:#f0b90b1a;
+    --text:#eef1f6;
+    --text-dim:#8b93a7;
+    --green:#16c784;
+    --red:#ea3943;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:
+      radial-gradient(900px 500px at 50% -10%, rgba(240,185,11,0.10), transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+  }
+  h1,h2{font-family:'Space Grotesk',sans-serif;color:var(--text);margin:0;}
+  a{color:var(--text-dim);text-decoration:none;font-weight:600;}
+  a:hover{color:var(--gold);}
+
+  .admin-card{
+    width:100%;
+    max-width:400px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:38px 34px;
+    box-shadow:0 24px 70px rgba(0,0,0,0.5);
+    opacity:0;
+    transform:translateY(16px);
+    animation:cardIn .6s cubic-bezier(.22,1,.36,1) forwards .1s;
+  }
+  @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
+
+  .lock-badge{
+    width:56px;height:56px;
+    border-radius:14px;
+    background:var(--gold-soft);
+    border:1px solid rgba(240,185,11,0.35);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;
+    margin:0 auto 20px;
+  }
+
+  .admin-card h1{
+    text-align:center;
+    font-size:23px;
+    margin-bottom:8px;
+  }
+  .admin-card .sub{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:13.5px;
+    margin-bottom:8px;
+  }
+  .restricted-tag{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    font-size:11.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--text-dim);
+    margin-bottom:30px;
+  }
+  .restricted-tag .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--red);
+  }
+
+  .field{margin-bottom:18px;}
+  label{
+    display:block;
+    font-size:12px;font-weight:600;color:var(--text-dim);
+    text-transform:uppercase;letter-spacing:0.5px;
+    margin-bottom:8px;
+  }
+  input[type="email"], input[type="password"]{
+    width:100%;
+    padding:12.5px 14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--bg-soft);
+    color:var(--text);
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+    transition:border-color .25s ease, box-shadow .25s ease;
+  }
+  input:focus{
+    outline:none;
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(240,185,11,0.15);
+  }
+  .password-box{position:relative;}
+  .password-box input{padding-right:44px;}
+  .toggle-btn{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    background:none;border:none;color:var(--text-dim);
+    font-size:15px;cursor:pointer;padding:6px;
+    transition:color .2s;
+  }
+  .toggle-btn:hover{color:var(--gold);}
+
+  button[type="submit"]{
+    width:100%;
+    padding:13.5px;
+    background:linear-gradient(145deg,var(--gold),#c99500);
+    color:#05070c;
+    font-size:14.5px;font-weight:700;
+    border:none;border-radius:10px;
+    cursor:pointer;
+    margin-top:6px;
+    transition:transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s cubic-bezier(.22,1,.36,1), filter .25s ease;
+  }
+  button[type="submit"]:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 26px rgba(240,185,11,0.3);
+    filter:brightness(1.05);
+  }
+  button[type="submit"]:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none;}
+
+  .back-links{
+    display:flex;
+    justify-content:center;
+    gap:18px;
+    margin-top:26px;
+    font-size:12.5px;
+  }
+  .back-links .sep{color:var(--border);}
+
+  .footnote{
+    text-align:center;
+    margin-top:22px;
+    font-size:11.5px;
+    color:var(--text-dim);
+    opacity:0.7;
+  }
+
+  @media (max-width:480px){
+    .admin-card{padding:30px 24px;}
+  }
+</style>
 </head>
 <body>
-  <div class="form-container">
-    <h1>Admin Login</h1>
-    <form id="adminLoginForm">
-      <label for="email">Email</label>
-      <input type="email" id="email" required>
 
+<div class="admin-card">
+  <div class="lock-badge">🔒</div>
+  <h1>Admin Login</h1>
+  <p class="sub">Profit Time control panel</p>
+  <div class="restricted-tag"><span class="dot"></span> Authorized Personnel Only</div>
+
+  <form id="adminLoginForm">
+    <div class="field">
+      <label for="email">Admin Email</label>
+      <input type="email" id="email" placeholder="admin@profittime.com" required>
+    </div>
+
+    <div class="field">
       <label for="password">Password</label>
       <div class="password-box">
-        <input type="password" id="password" required>
+        <input type="password" id="password" placeholder="Enter your password" required>
         <button type="button" class="toggle-btn" id="toggleBtn">👁</button>
       </div>
+    </div>
 
-      <button type="submit" id="adminLoginBtn">Login</button>
-    </form>
+    <button type="submit" id="adminLoginBtn">Log In</button>
+  </form>
+
+  <div class="back-links">
+    <a href="login.html">User Login</a>
+    <span class="sep">|</span>
+    <a href="index.html">Back to Home</a>
   </div>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  <p class="footnote">All admin activity is monitored and logged.</p>
+</div>
 
-    const supabase = createClient(
-      'https://zjqknqnvlmlkkgzglvjk.supabase.co',
-      'sb_publishable_YXPm0Uo8HmW-Fg2N5LFUdA_X2POjW9u'
-    );
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    document.getElementById("toggleBtn").addEventListener("click", () => {
-      const field = document.getElementById("password");
-      field.type = field.type === "password" ? "text" : "password";
+  const supabase = createClient(
+    'https://zjqknqnvlmlkkgzglvjk.supabase.co',
+    'sb_publishable_YXPm0Uo8HmW-Fg2N5LFUdA_X2POjW9u'
+  );
+
+  document.getElementById("toggleBtn").addEventListener("click", () => {
+    const field = document.getElementById("password");
+    field.type = field.type === "password" ? "text" : "password";
+  });
+
+  const form = document.getElementById("adminLoginForm");
+  const loginBtn = document.getElementById("adminLoginBtn");
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Checking...";
+
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email, password
     });
 
-    const form = document.getElementById("adminLoginForm");
-    const loginBtn = document.getElementById("adminLoginBtn");
+    if (signInError) {
+      alert("Login failed: " + signInError.message);
+      loginBtn.disabled = false;
+      loginBtn.textContent = "Log In";
+      return;
+    }
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+    const user = signInData.user;
 
-      loginBtn.disabled = true;
-      loginBtn.textContent = "Checking...";
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
 
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email, password
-      });
+    if (profileError || !profile || !profile.is_admin) {
+      alert("Access denied. Not an admin.");
+      await supabase.auth.signOut();
+      loginBtn.disabled = false;
+      loginBtn.textContent = "Log In";
+      return;
+    }
 
-      if (signInError) {
-        alert("Login failed: " + signInError.message);
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Login";
-        return;
-      }
-
-      const user = signInData.user;
-
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('is_admin')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError || !profile || !profile.is_admin) {
-        alert("Access denied. Not an admin.");
-        await supabase.auth.signOut();
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Login";
-        return;
-      }
-
-      window.location.href = "adminportal.html";
-    });
-  </script>
+    window.location.href = "adminportal.html";
+  });
+</script>
 </body>
 </html>
