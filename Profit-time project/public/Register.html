@@ -1,293 +1,712 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register - Profit Time</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background-color: #000;
-      color: #fff;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register - Profit Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070c;
+    --bg-soft:#0b0f18;
+    --card:#11151f;
+    --card-hi:#161c29;
+    --border:#232b3d;
+    --gold:#f0b90b;
+    --gold-2:#ffd84d;
+    --gold-soft:#f0b90b1a;
+    --text:#eef1f6;
+    --text-dim:#8b93a7;
+    --green:#16c784;
+    --red:#ea3943;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;color:var(--text);margin:0;}
+  a{color:var(--gold);text-decoration:none;}
+
+  .wrap{
+    min-height:100vh;
+    display:grid;
+    grid-template-columns:1fr 1.15fr;
+  }
+
+  /* ---------- LEFT / BRAND PANEL ---------- */
+  .brand-panel{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:60px 56px;
+    background:
+      radial-gradient(700px 500px at 10% 10%, rgba(240,185,11,0.14), transparent 60%),
+      radial-gradient(700px 500px at 90% 90%, rgba(240,185,11,0.10), transparent 60%),
+      var(--bg-soft);
+    border-right:1px solid var(--border);
+    overflow:hidden;
+  }
+  .brand-panel::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(rgba(5,7,12,0.6), rgba(5,7,12,0.85)),
+      url('../images/profitting grade.jpg') center/cover no-repeat;
+    opacity:0.3;
+  }
+  .brand-panel > *{position:relative;z-index:1;}
+
+  .brand-logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:50px;
+  }
+  .brand-logo img{width:52px;height:auto;display:block;}
+  .brand-logo span{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:20px;
+  }
+  .brand-logo span b{color:var(--gold);}
+
+  .brand-panel h1{
+    font-size:clamp(26px,3.2vw,38px);
+    line-height:1.15;
+    margin-bottom:16px;
+  }
+  .brand-panel h1 .accent{
+    background:linear-gradient(100deg,#fff 20%,var(--gold-2) 50%,#fff 80%);
+    background-size:220% auto;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shine 5s linear infinite;
+  }
+  @keyframes shine{0%{background-position:0% center;}100%{background-position:220% center;}}
+  .brand-panel p.lead{
+    color:var(--text-dim);
+    font-size:15px;
+    line-height:1.7;
+    max-width:400px;
+    margin-bottom:36px;
+  }
+
+  .perk-list{display:flex;flex-direction:column;gap:14px;margin-bottom:36px;}
+  .perk{display:flex;align-items:flex-start;gap:12px;}
+  .perk .ic{
+    width:30px;height:30px;border-radius:8px;
+    background:var(--gold-soft);
+    border:1px solid rgba(240,185,11,0.3);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;font-size:14px;
+  }
+  .perk .txt{font-size:13.5px;color:var(--text-dim);line-height:1.5;padding-top:4px;}
+  .perk .txt b{color:var(--text);}
+
+  .package-strip{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .pkg-chip{
+    background:rgba(17,21,31,0.7);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 14px;
+    backdrop-filter:blur(6px);
+  }
+  .pkg-chip .name{font-size:12.5px;font-weight:700;color:var(--gold);}
+  .pkg-chip .roi{font-size:11.5px;color:var(--text-dim);margin-top:2px;}
+
+  /* ---------- RIGHT / FORM PANEL ---------- */
+  .form-panel{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:48px 24px;
+  }
+  .reg-card{
+    width:100%;
+    max-width:460px;
+    opacity:0;
+    transform:translateY(16px);
+    animation:cardIn .7s cubic-bezier(.22,1,.36,1) forwards .1s;
+  }
+  @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
+
+  .reg-card .eyebrow{
+    display:inline-block;
+    font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;
+    color:var(--gold);background:var(--gold-soft);
+    border:1px solid rgba(240,185,11,0.3);
+    padding:6px 14px;border-radius:20px;margin-bottom:18px;
+  }
+  .reg-card h2{font-size:27px;margin-bottom:8px;}
+  .reg-card .sub{color:var(--text-dim);font-size:14.5px;margin-bottom:30px;}
+
+  .field{margin-bottom:18px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  label{
+    display:block;
+    font-size:12.5px;font-weight:600;color:var(--text-dim);
+    text-transform:uppercase;letter-spacing:0.5px;
+    margin-bottom:8px;
+  }
+  input[type="email"], input[type="password"], input[type="text"], select{
+    width:100%;
+    padding:13px 14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--card);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    transition:border-color .25s ease, box-shadow .25s ease;
+    appearance:none;
+    -webkit-appearance:none;
+  }
+  select{
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1L7 7L13 1' stroke='%238b93a7' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 14px center;
+    padding-right:38px;
+  }
+  select option{background:var(--card);color:var(--text);}
+  input:focus, select:focus{
+    outline:none;
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(240,185,11,0.15);
+  }
+  .password-wrapper{position:relative;}
+  .password-wrapper input{padding-right:46px;}
+  .toggle-password{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    background:none;border:none;color:var(--text-dim);
+    font-size:16px;cursor:pointer;padding:6px;
+    transition:color .2s;
+  }
+  .toggle-password:hover{color:var(--gold);}
+
+  button[type="submit"]{
+    width:100%;
+    padding:14px;
+    background:linear-gradient(145deg,var(--gold),#c99500);
+    color:#05070c;
+    font-size:15.5px;font-weight:700;
+    border:none;border-radius:10px;
+    cursor:pointer;
+    margin-top:6px;
+    transition:transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s cubic-bezier(.22,1,.36,1), filter .25s ease;
+  }
+  button[type="submit"]:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 28px rgba(240,185,11,0.35);
+    filter:brightness(1.05);
+  }
+  button[type="submit"]:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none;}
+
+  .signup-line{
+    text-align:center;
+    font-size:14px;
+    color:var(--text-dim);
+    margin-top:22px;
+  }
+  .signup-line a{font-weight:700;}
+  .signup-line a:hover{color:var(--gold-2);}
+
+  .message{
+    text-align:center;
+    padding:40px 20px;
+    max-width:460px;
+  }
+  .message .ic{font-size:40px;margin-bottom:14px;}
+  .message p{color:var(--text-dim);font-size:15px;margin-bottom:20px;}
+  .message h2{margin-bottom:8px;}
+  .message .btn-link{
+    display:inline-block;
+    padding:12px 26px;
+    background:linear-gradient(145deg,var(--gold),#c99500);
+    color:#05070c;
+    font-weight:700;
+    border-radius:10px;
+  }
+
+  /* ---------- CHAT WIDGET ---------- */
+  .chat-toggle{
+    position:fixed;
+    right:24px;bottom:24px;
+    width:58px;height:58px;
+    border-radius:50%;
+    background:linear-gradient(145deg,var(--gold),#c99500);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;
+    cursor:pointer;
+    box-shadow:0 8px 24px rgba(240,185,11,0.4);
+    z-index:1200;
+    border:none;
+    transition:transform .25s cubic-bezier(.22,1,.36,1);
+  }
+  .chat-toggle:hover{transform:scale(1.08);}
+  .chat-toggle .ping{
+    position:absolute;top:-3px;right:-3px;
+    width:14px;height:14px;border-radius:50%;
+    background:var(--green);
+    border:2px solid var(--bg);
+    box-shadow:0 0 0 0 rgba(22,199,132,.6);
+    animation:pulse 1.6s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(22,199,132,.55);}
+    70%{box-shadow:0 0 0 8px rgba(22,199,132,0);}
+    100%{box-shadow:0 0 0 0 rgba(22,199,132,0);}
+  }
+
+  .chat-window{
+    position:fixed;
+    right:24px;bottom:94px;
+    width:340px;
+    max-width:calc(100vw - 32px);
+    height:440px;
+    max-height:calc(100vh - 140px);
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    z-index:1200;
+    opacity:0;
+    transform:translateY(16px) scale(0.98);
+    pointer-events:none;
+    transition:opacity .25s cubic-bezier(.22,1,.36,1), transform .25s cubic-bezier(.22,1,.36,1);
+  }
+  .chat-window.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+
+  .chat-head{
+    background:var(--card-hi);
+    border-bottom:1px solid var(--border);
+    padding:16px 18px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .chat-avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(145deg,var(--gold),#7a5800);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;color:#05070c;font-size:14px;flex-shrink:0;
+  }
+  .chat-head .title{font-weight:700;font-size:14.5px;}
+  .chat-head .status{font-size:12px;color:var(--green);display:flex;align-items:center;gap:5px;}
+  .chat-head .status .d{width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .chat-close{
+    margin-left:auto;background:none;border:none;color:var(--text-dim);
+    font-size:20px;cursor:pointer;line-height:1;padding:4px;
+  }
+  .chat-close:hover{color:var(--gold);}
+
+  .chat-body{
+    flex:1;
+    overflow-y:auto;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .msg{
+    max-width:80%;
+    padding:10px 13px;
+    border-radius:12px;
+    font-size:13.5px;
+    line-height:1.5;
+  }
+  .msg.bot{
+    align-self:flex-start;
+    background:var(--card-hi);
+    border:1px solid var(--border);
+    border-bottom-left-radius:3px;
+  }
+  .msg.user{
+    align-self:flex-end;
+    background:linear-gradient(145deg,var(--gold),#c99500);
+    color:#05070c;
+    font-weight:600;
+    border-bottom-right-radius:3px;
+  }
+  .quick-replies{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:0 16px 12px;
+  }
+  .quick-replies button{
+    background:var(--card-hi);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-size:12.5px;
+    font-weight:600;
+    padding:8px 12px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .quick-replies button:hover{border-color:var(--gold);color:var(--gold);}
+
+  .chat-input-row{
+    display:flex;
+    gap:8px;
+    padding:12px;
+    border-top:1px solid var(--border);
+  }
+  .chat-input-row input{
+    flex:1;
+    background:var(--bg-soft);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:10px 16px;
+    color:var(--text);
+    font-size:13.5px;
+    font-family:'Inter',sans-serif;
+  }
+  .chat-input-row input:focus{outline:none;border-color:var(--gold);}
+  .chat-send{
+    width:38px;height:38px;flex-shrink:0;
+    border-radius:50%;
+    background:linear-gradient(145deg,var(--gold),#c99500);
+    border:none;color:#05070c;font-weight:700;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  /* ---------- MEDIA QUERIES ---------- */
+  @media (max-width:980px){
+    .wrap{grid-template-columns:1fr;}
+    .brand-panel{
+      padding:44px 32px;
+      min-height:auto;
     }
-
-    h1 {
-      color: #FFD700;
-      text-align: center;
-      margin-top: 40px;
+    .package-strip{display:none;}
+    .form-panel{padding:36px 20px 60px;}
+  }
+  @media (max-width:600px){
+    .field-row{grid-template-columns:1fr;gap:0;}
+    .brand-panel{padding:36px 22px;}
+    .brand-panel h1{font-size:24px;}
+    .brand-panel p.lead{font-size:13.5px;margin-bottom:26px;}
+    .perk-list{margin-bottom:0;}
+    .reg-card h2{font-size:22px;}
+    .chat-window{
+      right:16px;left:16px;width:auto;bottom:88px;
+      max-width:none;
     }
-
-    .form-container {
-      max-width: 600px;
-      margin: 40px auto;
-      background-color: #111;
-      padding: 30px;
-      border-radius: 10px;
-      border: 2px solid #FFD700;
-      box-shadow: 0 0 20px #FFD700;
-    }
-
-   input, select {
-  width: 100%;
-  max-width: 100%;
-  padding: 10px 0px 10px 10px;
-  margin-bottom: 15px;
-  border: 1.5px solid #FFD700;
-  border-radius: 5px;
-  background-color: #000;
-  color: #fff;
-  font-size: 14px;
-}
-
-label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: #FFD700;
-  font-size: 14px;
-}
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: #fff;
-    }
-
-    .password-wrapper {
-      position: relative;
-    }
-
-    .password-wrapper input {
-      padding-right: 0px;
-    }
-
-    .toggle-password {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #FFD700;
-      font-size: 14px;
-      cursor: pointer;
-      padding: 0;
-      outline: none;
-    }
-
-    .toggle-password:hover,
-    .toggle-password:focus,
-    .toggle-password:active {
-      background: none;
-      color: #FFD700;
-      outline: none;
-      box-shadow: none;
-    }
-
-    button {
-      width: 100%;
-      padding: 15px;
-      background-color: #FFD700;
-      color: #000;
-      font-size: 18px;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background-color: #fff;
-      color: #000;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .success-message {
-      text-align: center;
-      color: #FFD700;
-      font-size: 20px;
-      margin-top: 20px;
-    }
-
-    .login-link {
-      display: block;
-      text-align: center;
-      margin-top: 15px;
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .login-link a {
-      color: #FFD700;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-
-    .login-link a:hover {
-      color: #fff;
-    }
-
-    @media (max-width: 600px) {
-      .form-container {
-        margin: 20px;
-        padding: 20px;
-      }
-      h1 {
-        font-size: 22px;
-      }
-      button {
-        font-size: 16px;
-        padding: 12px;
-      }
-    }
-  </style>
+    .chat-toggle{right:16px;bottom:16px;}
+  }
+</style>
 </head>
 <body>
 
-  <h1>Register Your Investment</h1>
+<div class="wrap">
 
-  <div class="form-container" id="registrationForm">
-    <form id="regForm">
-      <label for="name">Full Name</label>
-      <input type="text" id="name" name="name" required>
+  <!-- LEFT BRAND PANEL -->
+  <div class="brand-panel">
+    <div class="brand-logo">
+      <img src="../images/logo.png" alt="Profit Time logo">
+      <span>Profit<b>Time</b></span>
+    </div>
 
-      <label for="email">Email Address</label>
-      <input type="email" id="email" name="email" required>
+    <h1>Start your <span class="accent">investment journey</span> today</h1>
+    <p class="lead">Create your account in minutes and let our AI-driven strategies start working toward your goals.</p>
 
-      <label for="password">Password</label>
-      <div class="password-wrapper">
-        <input type="password" id="password" name="password" required minlength="6">
-        <span class="toggle-password" onclick="togglePassword('password')">👁</span>
+    <div class="perk-list">
+      <div class="perk">
+        <div class="ic">⚡</div>
+        <div class="txt"><b>AI-managed trading</b> across crypto and forex, tailored to your package.</div>
       </div>
-
-      <label for="confirmPassword">Confirm Password</label>
-      <div class="password-wrapper">
-        <input type="password" id="confirmPassword" name="confirmPassword" required>
-        <span class="toggle-password" onclick="togglePassword('confirmPassword')">👁</span>
+      <div class="perk">
+        <div class="ic">🔒</div>
+        <div class="txt"><b>Secure by design</b> — encrypted accounts and transparent risk controls.</div>
       </div>
+      <div class="perk">
+        <div class="ic">📈</div>
+        <div class="txt"><b>Weekly ROI</b> that scales with the package you choose.</div>
+      </div>
+    </div>
 
-      <label for="location">Select Location</label>
-      <select id="location" name="location" required>
-        <option value="">-- Choose Location --</option>
-        <option value="Nigeria">Nigeria</option>
-        <option value="USA">USA</option>
-        <option value="UK">UK</option>
-        <option value="Canada">Canada</option>
-        <option value="Other">Other</option>
-      </select>
-
-      <label for="amount">Investment Amount Range</label>
-      <select id="amount" name="amount" required>
-        <option value="">-- Choose Range --</option>
-        <option value="100-499">$100 - $499</option>
-        <option value="500-999">$500 - $999</option>
-        <option value="1000-4999">$1,000 - $4,999</option>
-        <option value="5000+">$5,000+</option>
-      </select>
-
-      <label for="package">Select Package</label>
-      <select id="package" name="package" required>
-        <option value="">-- Choose Package --</option>
-        <option value="Starter">Starter (13% ROI Weekly)</option>
-        <option value="Growth">Growth (16% ROI Weekly)</option>
-        <option value="Premium">Premium (20% ROI Weekly)</option>
-        <option value="Elite">Elite (24% ROI Weekly)</option>
-      </select>
-
-      <button type="submit" id="regSubmitBtn">Register</button>
-    </form>
-  </div>
-
-  <div class="success-message" id="successMessage" style="display:none;">
-    🎉 Thank you for registering! Your account has been created.
-    <div class="login-link">
-      <a href="login.html">Proceed to Login</a>
+    <div class="package-strip">
+      <div class="pkg-chip"><div class="name">Starter</div><div class="roi">13% ROI / week</div></div>
+      <div class="pkg-chip"><div class="name">Growth</div><div class="roi">16% ROI / week</div></div>
+      <div class="pkg-chip"><div class="name">Premium</div><div class="roi">20% ROI / week</div></div>
+      <div class="pkg-chip"><div class="name">Elite</div><div class="roi">24% ROI / week</div></div>
     </div>
   </div>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  <!-- RIGHT FORM PANEL -->
+  <div class="form-panel">
+    <div class="reg-card" id="registrationForm">
+      <span class="eyebrow">Create Account</span>
+      <h2>Register your investment</h2>
+      <p class="sub">Fill in your details to get started.</p>
 
-    const supabase = createClient(
-      'https://zjqknqnvlmlkkgzglvjk.supabase.co',
-      'sb_publishable_YXPm0Uo8HmW-Fg2N5LFUdA_X2POjW9u'
-    );
+      <form id="regForm">
+        <div class="field">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="Your full name" required>
+        </div>
 
-    window.togglePassword = function (fieldId) {
-      const field = document.getElementById(fieldId);
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="password-wrapper">
+              <input type="password" id="password" name="password" placeholder="Min. 6 characters" required minlength="6">
+              <button type="button" class="toggle-password" data-target="password">👁</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="password-wrapper">
+              <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repeat password" required>
+              <button type="button" class="toggle-password" data-target="confirmPassword">👁</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="location">Select Location</label>
+          <select id="location" name="location" required>
+            <option value="">-- Choose Location --</option>
+            <option value="Nigeria">Nigeria</option>
+            <option value="USA">USA</option>
+            <option value="UK">UK</option>
+            <option value="Canada">Canada</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="amount">Investment Amount Range</label>
+          <select id="amount" name="amount" required>
+            <option value="">-- Choose Range --</option>
+            <option value="100-499">$100 - $499</option>
+            <option value="500-999">$500 - $999</option>
+            <option value="1000-4999">$1,000 - $4,999</option>
+            <option value="5000+">$5,000+</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="package">Select Package</label>
+          <select id="package" name="package" required>
+            <option value="">-- Choose Package --</option>
+            <option value="Starter">Starter (13% ROI Weekly)</option>
+            <option value="Growth">Growth (16% ROI Weekly)</option>
+            <option value="Premium">Premium (20% ROI Weekly)</option>
+            <option value="Elite">Elite (24% ROI Weekly)</option>
+          </select>
+        </div>
+
+        <button type="submit" id="regSubmitBtn">Register</button>
+      </form>
+
+      <p class="signup-line">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+
+    <div class="message" id="successMessage" style="display:none;">
+      <div class="ic">🎉</div>
+      <h2>Welcome to Profit Time!</h2>
+      <p>Your account has been created successfully.</p>
+      <a href="login.html" class="btn-link">Proceed to Login</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- CHAT WIDGET -->
+<button class="chat-toggle" id="chatToggle" aria-label="Open support chat">
+  💬<span class="ping"></span>
+</button>
+
+<div class="chat-window" id="chatWindow">
+  <div class="chat-head">
+    <div class="chat-avatar">PT</div>
+    <div>
+      <div class="title">Profit Time Support</div>
+      <div class="status"><span class="d"></span> Online now</div>
+    </div>
+    <button class="chat-close" id="chatClose">&times;</button>
+  </div>
+
+  <div class="chat-body" id="chatBody">
+    <div class="msg bot">Hi there 👋 Thinking about which package to pick, or need help with the sign-up form? Ask away!</div>
+  </div>
+
+  <div class="quick-replies" id="quickReplies">
+    <button data-q="package">Which package is best?</button>
+    <button data-q="form">Trouble with the form</button>
+    <button data-q="human">Talk to a human</button>
+  </div>
+
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Type a message...">
+    <button class="chat-send" id="chatSend">➤</button>
+  </div>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const supabase = createClient(
+    'https://zjqknqnvlmlkkgzglvjk.supabase.co',
+    'sb_publishable_YXPm0Uo8HmW-Fg2N5LFUdA_X2POjW9u'
+  );
+
+  document.querySelectorAll(".toggle-password").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const field = document.getElementById(btn.dataset.target);
       field.type = field.type === "password" ? "text" : "password";
-    };
-
-    const regForm = document.getElementById("regForm");
-    const submitBtn = document.getElementById("regSubmitBtn");
-
-    regForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
-      const location = document.getElementById("location").value;
-      const amount = document.getElementById("amount").value;
-      const packageChoice = document.getElementById("package").value;
-
-      if (password !== confirmPassword) {
-        alert("Passwords do not match!");
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Registering...";
-
-      // 1. Create the auth user
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password
-      });
-
-      if (signUpError) {
-        alert("Registration failed: " + signUpError.message);
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Register";
-        return;
-      }
-
-      const user = signUpData.user;
-
-      if (!user) {
-        // Email confirmation is likely required before a session exists
-        alert("Check your email to confirm your account, then log in.");
-        window.location.href = "login.html";
-        return;
-      }
-
-      // 2. Fill in the profile row (auto-created by the on_auth_user_created trigger)
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          name,
-          location,
-          amount_range: amount,
-          package_choice: packageChoice
-        })
-        .eq('id', user.id);
-
-      if (profileError) {
-        alert("Account created, but saving your details failed: " + profileError.message);
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Register";
-        return;
-      }
-
-      document.getElementById("registrationForm").style.display = "none";
-      document.getElementById("successMessage").style.display = "block";
     });
-  </script>
+  });
+
+  const regForm = document.getElementById("regForm");
+  const submitBtn = document.getElementById("regSubmitBtn");
+
+  regForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    const location = document.getElementById("location").value;
+    const amount = document.getElementById("amount").value;
+    const packageChoice = document.getElementById("package").value;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Registering...";
+
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password
+    });
+
+    if (signUpError) {
+      alert("Registration failed: " + signUpError.message);
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Register";
+      return;
+    }
+
+    const user = signUpData.user;
+
+    if (!user) {
+      alert("Check your email to confirm your account, then log in.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({
+        name,
+        location,
+        amount_range: amount,
+        package_choice: packageChoice
+      })
+      .eq('id', user.id);
+
+    if (profileError) {
+      alert("Account created, but saving your details failed: " + profileError.message);
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Register";
+      return;
+    }
+
+    document.getElementById("registrationForm").style.display = "none";
+    document.getElementById("successMessage").style.display = "block";
+  });
+</script>
+
+<script>
+  /* ---------- support chat widget (front-end only) ---------- */
+  const chatToggle = document.getElementById("chatToggle");
+  const chatWindow = document.getElementById("chatWindow");
+  const chatClose = document.getElementById("chatClose");
+  const chatBody = document.getElementById("chatBody");
+  const chatInput = document.getElementById("chatInput");
+  const chatSend = document.getElementById("chatSend");
+  const quickReplies = document.getElementById("quickReplies");
+
+  function openChat(){ chatWindow.classList.add("open"); chatInput.focus(); }
+  function closeChat(){ chatWindow.classList.remove("open"); }
+
+  chatToggle.addEventListener("click", () => {
+    chatWindow.classList.contains("open") ? closeChat() : openChat();
+  });
+  chatClose.addEventListener("click", closeChat);
+
+  function addMessage(text, from){
+    const div = document.createElement("div");
+    div.className = "msg " + from;
+    div.textContent = text;
+    chatBody.appendChild(div);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  const REPLIES = {
+    package: {
+      label: "Which package is best?",
+      response: "It depends on your budget and risk comfort: Starter suits smaller, cautious investments, while Growth and Premium offer higher weekly ROI with larger capital. Elite is for investors ready to go all-in. Check the package strip on the left for a quick comparison!"
+    },
+    form: {
+      label: "Trouble with the form",
+      response: "Happy to help! Make sure your password is at least 6 characters and matches the confirm field, and that every dropdown has a selection. If it's still not working, email support@profittime.com with a screenshot."
+    },
+    human: {
+      label: "Talk to a human",
+      response: "Sure thing — email us anytime at support@profittime.com and a real member of our team will get back to you as soon as possible."
+    }
+  };
+
+  quickReplies.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.q;
+      addMessage(REPLIES[key].label, "user");
+      setTimeout(() => addMessage(REPLIES[key].response, "bot"), 500);
+    });
+  });
+
+  function handleUserMessage(){
+    const text = chatInput.value.trim();
+    if (!text) return;
+    addMessage(text, "user");
+    chatInput.value = "";
+    setTimeout(() => {
+      addMessage("Thanks for reaching out! Our team typically replies within a few minutes during business hours. For urgent matters, email support@profittime.com.", "bot");
+    }, 600);
+  }
+
+  chatSend.addEventListener("click", handleUserMessage);
+  chatInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleUserMessage();
+  });
+</script>
+
 </body>
 </html>
